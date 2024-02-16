@@ -27,3 +27,15 @@ class User(Base):
     updated_at: Mapped[date] = mapped_column('updated_at', DateTime, default=func.now(), onupdate=func.now())
     confirmed: Mapped[bool] = mapped_column(Boolean, default=False, nullable=True)
     role: Mapped[Enum] = mapped_column('role', Enum(Role), default=Role.user, nullable=True)
+
+
+class Tag(Base):  # new
+    __tablename__ = "tags"
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    name: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
+    created_at: Mapped[date] = mapped_column(
+        'created_at', DateTime, default=func.now(), nullable=True)
+    updated_at: Mapped[date] = mapped_column(
+        'updated_at', DateTime, default=func.now(), onupdate=func.now(), nullable=True)
+    #  TODO: create relationship
