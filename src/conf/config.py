@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    DB_URL: str = "postgresql+asyncpg://POSTGRES_USER:POSTGRES_PASSWORD@POSTGRES_DOMAIN:5432/POSTGRES_DB"
+    SQLALCHEMY_DATABASE_URL: str = "postgresql+asyncpg://POSTGRES_USER:POSTGRES_PASSWORD@POSTGRES_DOMAIN:5432/POSTGRES_DB"
     SECRET_KEY_JWT: str = "secret_jwt"
     ALGORITHM: str = "HS256"
     MAIL_USERNAME: EmailStr = "secret@email.ua"
