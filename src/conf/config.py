@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    DB_URL: str = "postgresql+asyncpg://POSTGRES_USER:POSTGRES_PASSWORD@POSTGRES_DOMAIN:5432/POSTGRES_DB"
+    SQLALCHEMY_DATABASE_URL: str = "postgresql+asyncpg://POSTGRES_USER:POSTGRES_PASSWORD@POSTGRES_DOMAIN:5432/POSTGRES_DB"
     SECRET_KEY_JWT: str = "secret_jwt"
     ALGORITHM: str = "HS256"
     MAIL_USERNAME: EmailStr = "secret@email.ua"
@@ -13,9 +13,9 @@ class Settings(BaseSettings):
     MAIL_FROM: str = "secret@email.ua"
     MAIL_PORT: int = 000000
     MAIL_SERVER: str = "email_server"
-    CLOUDINARY_NAME: str = "cloudinary_name"
-    CLOUDINARY_API_KEY: int = 0000000000000
-    CLOUDINARY_API_SECRET: str = "cloudinary_api_secret"
+    CLD_NAME: str = "cloudinary_name"
+    CLD_API_KEY: int = 0000000000000
+    CLD_API_SECRET: str = "cloudinary_api_secret"
 
     @field_validator("ALGORITHM")
     @classmethod
