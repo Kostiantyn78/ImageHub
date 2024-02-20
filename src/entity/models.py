@@ -10,6 +10,12 @@ class Base(DeclarativeBase):
     pass
 
 
+class Role(enum.Enum):
+    admin: str = "admin"
+    moderator: str = "moderator"
+    user: str = "user"
+
+
 class JoinTime:
     id: Mapped[int] = mapped_column(primary_key=True)
     created_at: Mapped[date] = mapped_column(
@@ -18,23 +24,24 @@ class JoinTime:
         'updated_at', DateTime, default=func.now(), onupdate=func.now(), nullable=True)
 
 
-class Role(enum.Enum):
-    admin: str = "admin"
-    moderator: str = "moderator"
-    user: str = "user"
-
-
 tag_for_photo = Table(
     'tag_for_photo',
     Base.metadata,
-    Column('photo_id', Integer, ForeignKey('photos.id', ondelete="CASCADE")),
+    Column('images_id', Integer, ForeignKey('images.id', ondelete="CASCADE")),
     Column('tag_id', Integer, ForeignKey('tags.id'))
 )
 
 
 class User(JoinTime, Base):
+    """
+
+       Relationships:
+       - One-to-Many relationship with Photo model via `photos` attribute.
+
+    """
+
     __tablename__ = "users"
-    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+
     username: Mapped[str] = mapped_column(String(150), nullable=False)
     email: Mapped[str] = mapped_column(String(150), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(String(255), nullable=False)
@@ -42,34 +49,62 @@ class User(JoinTime, Base):
     refresh_token: Mapped[str] = mapped_column(String(255), nullable=True)
     confirmed: Mapped[bool] = mapped_column(Boolean, default=False, nullable=True)
     role: Mapped[Enum] = mapped_column('role', Enum(Role), default=Role.user, nullable=True)
-    count_photo: Mapped[Optional[int]] = mapped_column(
-        Integer, nullable=True)
-    photos: Mapped["Photo"] = relationship(
-        "Photo", back_populates="user", uselist=True, lazy='joined', cascade='all, delete')
-    tags: Mapped[List["Tag"]] = relationship(
-        secondary=tag_for_photo, back_populates="photos", lazy='joined')
+    count_photo: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    photos: Mapped[List["Image"]] = relationship(
+        "Image", back_populates="user", uselist=True, lazy='joined', cascade='all, delete')
 
 
 class Tag(JoinTime, Base):
+    """
+
+       Relationships:
+       - Many-to-Many relationship with Photo model via `images` attribute.
+
+    """
+
     __tablename__ = "tags"
 
     name: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
-    photos: Mapped[List["Photo"]] = relationship(
+    images: Mapped[List["Image"]] = relationship(
         secondary=tag_for_photo, back_populates='tags', lazy='joined')
 
 
-class Photo(JoinTime, Base):
-    __tablename__ = 'photos'
+class Image(JoinTime, Base):
+    """
+
+       Relationships:
+       - Many-to-One relationship with User model via `user` attribute.
+       - Many-to-Many relationship with Tag model via `tags` attribute.
+       - One-to-Many relationship with PhotoSerialize model via `initial_photo` attribute.
+
+    """
+
+    __tablename__ = 'images'
+
     url: Mapped[str] = mapped_column(String(255), nullable=False)
     description: Mapped[str] = mapped_column(String(255), nullable=True, default=None)
-    cloud_id: Mapped[str] = mapped_column(String, nullable=False)
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
     user: Mapped["User"] = relationship("User", back_populates="photos", lazy='joined')
     tags: Mapped[List["Tag"]] = relationship(
-        secondary=tag_for_photo, back_populates='photos', lazy='joined')
+        secondary=tag_for_photo, back_populates='images', lazy='joined', uselist=True, cascade='all, delete')
+
+    transform: Mapped[List["Transform"]] = relationship("Transform",
+                                                        back_populates="initial_photo", lazy='joined')
 
 
-class PhotoSerialize(JoinTime, Base):
-    __tablename__ = 'photo_serialize'
-    natural_photo_id: Mapped[int] = mapped_column(ForeignKey('photos.id'), nullable=False)
-    natural_photo = relationship("Photo", back_populates="photo_serialize")
+class Transform(JoinTime, Base):
+    """
+
+        Relationships:
+        - Many-to-One relationship with Photo model via `initial_photo` attribute.
+
+    """
+
+    __tablename__ = 'transform'
+    natural_photo_id: Mapped[int] = mapped_column(ForeignKey('images.id'), nullable=False)
+    image_url: Mapped[str] = mapped_column(String(255), nullable=False)
+    cloudinary_public_id: Mapped[str] = mapped_column(String, nullable=False)  # TODO: Cloudinary
+    qr_code_url: Mapped[str] = mapped_column(String(255), nullable=True)
+    qr_code_public_id: Mapped[str] = mapped_column(String, nullable=True)  # TODO: Cloudinary
+    user_id: Mapped[int] = mapped_column(Integer, nullable=False)
+    initial_photo = relationship("Image", back_populates="transform")
