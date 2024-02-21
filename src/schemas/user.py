@@ -1,4 +1,5 @@
-from datetime import date, datetime
+from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel, EmailStr, Field
 
@@ -21,6 +22,14 @@ class UserResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class UserProfile(BaseModel):
+    username: str
+    email: EmailStr
+    avatar: str
+    count_photo: Optional[int]
+    created_at: datetime
 
 
 class TokenModel(BaseModel):

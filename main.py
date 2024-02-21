@@ -18,7 +18,7 @@ app.include_router(auth.router, prefix='/api')
 app.include_router(users.router, prefix='/api')
 
 
-@app.get("/api/healthchecker")
+@app.get("/api/healthchecker", tags=['Health checker'])
 async def healthchecker(db: AsyncSession = Depends(get_db)):
     try:
         result = await db.execute(text("SELECT 1"))
