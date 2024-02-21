@@ -1,16 +1,16 @@
 import cloudinary
 import cloudinary.uploader
-from fastapi import APIRouter, Depends, UploadFile, File
+from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.database.db import get_db
 from src.entity.models import User
-from src.schemas.user import UserResponse
+from src.schemas.user import UserResponse, UserProfile
 from src.services.auth import auth_service
 from src.conf.config import config
 from src.repository import users as repositories_users
 
-router = APIRouter(prefix="/users", tags=["users"])
+router = APIRouter(prefix="/users", tags=["Users"])
 cloudinary.config(cloud_name=config.CLOUDINARY_NAME, api_key=config.CLOUDINARY_API_KEY,
                   api_secret=config.CLOUDINARY_API_SECRET, secure=True)
 
@@ -30,3 +30,12 @@ async def update_avatar(file: UploadFile = File(), user: User = Depends(auth_ser
                                                               version=res.get("version"))
     user = await repositories_users.update_avatar_url(user.email, res_url, db)
     return user
+
+
+@router.get("/{username}", response_model=UserProfile)
+async def get_user_profile(username: str, db: AsyncSession = Depends(get_db)):
+    user_profile = await repositories_users.get_user_by_username(username, db)
+    await repositories_users.get_count_photo(db, user_profile)
+    if not user_profile:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found.")
+    return user_profile
