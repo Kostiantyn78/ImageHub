@@ -13,7 +13,7 @@ app = FastAPI(title="ImageHUB", description="Welcome to ImageHUB API",
 
 BASE_DIR = Path(__file__).parent
 directory = BASE_DIR.joinpath("src").joinpath("static")
-app.mount("/static", StaticFiles(directory=BASE_DIR / "src" / "static"), name="static")
+app.mount("/static", StaticFiles(directory=directory), name="static")
 
 app.include_router(auth.router, prefix='/api', tags=['Authentication'])
 app.include_router(users.router, prefix='/api', tags=['Users'])
