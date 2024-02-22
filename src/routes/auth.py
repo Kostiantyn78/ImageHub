@@ -10,6 +10,7 @@ from src.schemas.user import UserModel, TokenModel, UserResponse, RequestEmail
 from src.services.auth import auth_service
 from src.services.email import send_email
 
+
 router = APIRouter(prefix='/auth', tags=['Authentification'])
 get_refresh_token = HTTPBearer()
 

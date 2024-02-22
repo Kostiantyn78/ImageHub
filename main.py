@@ -6,16 +6,18 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text
 
 from src.database.db import get_db
-from src.routes import auth, users
+from src.routes import auth, users, photo
 
-app = FastAPI(title="ImageHUB")
+app = FastAPI(title="ImageHUB", description="Welcome to ImageHUB API",
+              swagger_ui_parameters={"syntaxHighlight.theme": "obsidian"})
 
 BASE_DIR = Path(__file__).parent
 directory = BASE_DIR.joinpath("src").joinpath("static")
-app.mount("/static", StaticFiles(directory=BASE_DIR/"src"/"static"), name="static")
+app.mount("/static", StaticFiles(directory=directory), name="static")
 
-app.include_router(auth.router, prefix='/api')
-app.include_router(users.router, prefix='/api')
+app.include_router(auth.router, prefix='/api', tags=['Authentication'])
+app.include_router(users.router, prefix='/api', tags=['Users'])
+app.include_router(photo.router, prefix='/api', tags=['Photos'])
 
 
 @app.get("/api/healthchecker", tags=['Health checker'])

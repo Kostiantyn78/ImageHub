@@ -36,7 +36,7 @@ class User(JoinTime, Base):
     """
 
        Relationships:
-       - One-to-Many relationship with Photo model via `photos` attribute.
+       - One-to-Many relationship with Image model via `photos` attribute.
 
     """
 
@@ -49,7 +49,6 @@ class User(JoinTime, Base):
     refresh_token: Mapped[str] = mapped_column(String(255), nullable=True)
     confirmed: Mapped[bool] = mapped_column(Boolean, default=False, nullable=True)
     role: Mapped[Enum] = mapped_column('role', Enum(Role), default=Role.user, nullable=True)
-    count_photo: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     photos: Mapped[List["Image"]] = relationship(
         "Image", back_populates="user", uselist=True, lazy='joined', cascade='all, delete')
 
@@ -58,7 +57,7 @@ class Tag(JoinTime, Base):
     """
 
        Relationships:
-       - Many-to-Many relationship with Photo model via `images` attribute.
+       - Many-to-Many relationship with Image model via `images` attribute.
 
     """
 
@@ -75,7 +74,7 @@ class Image(JoinTime, Base):
        Relationships:
        - Many-to-One relationship with User model via `user` attribute.
        - Many-to-Many relationship with Tag model via `tags` attribute.
-       - One-to-Many relationship with PhotoSerialize model via `initial_photo` attribute.
+       - One-to-Many relationship with Transform model via `initial_photo` attribute.
 
     """
 
@@ -83,6 +82,7 @@ class Image(JoinTime, Base):
 
     url: Mapped[str] = mapped_column(String(255), nullable=False)
     description: Mapped[str] = mapped_column(String(255), nullable=True, default=None)
+    cloudinary_public_id: Mapped[str] = mapped_column(String, nullable=False)
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
     user: Mapped["User"] = relationship("User", back_populates="photos", lazy='joined')
     tags: Mapped[List["Tag"]] = relationship(
@@ -96,7 +96,7 @@ class Transform(JoinTime, Base):
     """
 
         Relationships:
-        - Many-to-One relationship with Photo model via `initial_photo` attribute.
+        - Many-to-One relationship with Image model via `initial_photo` attribute.
 
     """
 
