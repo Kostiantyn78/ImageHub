@@ -20,7 +20,7 @@ app.include_router(users.router, prefix='/api', tags=['Users'])
 app.include_router(photo.router, prefix='/api', tags=['Photos'])
 
 
-@app.get("/api/healthchecker")
+@app.get("/api/healthchecker", tags=['Health checker'])
 async def healthchecker(db: AsyncSession = Depends(get_db)):
     try:
         result = await db.execute(text("SELECT 1"))

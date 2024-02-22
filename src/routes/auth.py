@@ -10,7 +10,8 @@ from src.schemas.user import UserModel, TokenModel, UserResponse, RequestEmail
 from src.services.auth import auth_service
 from src.services.email import send_email
 
-router = APIRouter(prefix='/auth')
+
+router = APIRouter(prefix='/auth', tags=['Authentification'])
 get_refresh_token = HTTPBearer()
 
 
@@ -81,9 +82,9 @@ async def request_email(body: RequestEmail, background_tasks: BackgroundTasks, r
     return {"message": "Check your email for confirmation."}
 
 
-@router.get('/{username}')
-async def request_email(username: str, response: Response, db: AsyncSession = Depends(get_db)):
-    print('----------------------------------------------')
-    print(f"{username} Save 'He opened email' in database")
-    print('----------------------------------------------')
-    return FileResponse('src/static/open_check.png', media_type='image/png', content_disposition_type='inline')
+# @router.get('/{username}')
+# async def request_email(username: str, response: Response, db: AsyncSession = Depends(get_db)):
+#     print('----------------------------------------------')
+#     print(f"{username} Save 'He opened email' in database")
+#     print('----------------------------------------------')
+#     return FileResponse('src/static/open_check.png', media_type='image/png', content_disposition_type='inline')
