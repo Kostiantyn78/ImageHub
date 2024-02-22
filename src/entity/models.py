@@ -49,6 +49,7 @@ class User(JoinTime, Base):
     refresh_token: Mapped[str] = mapped_column(String(255), nullable=True)
     confirmed: Mapped[bool] = mapped_column(Boolean, default=False, nullable=True)
     role: Mapped[Enum] = mapped_column('role', Enum(Role), default=Role.user, nullable=True)
+    count_photo: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     photos: Mapped[List["Image"]] = relationship(
         "Image", back_populates="user", uselist=True, lazy='joined', cascade='all, delete')
 
@@ -75,6 +76,7 @@ class Image(JoinTime, Base):
        - Many-to-One relationship with User model via `user` attribute.
        - Many-to-Many relationship with Tag model via `tags` attribute.
        - One-to-Many relationship with Transform model via `initial_photo` attribute.
+       - One-to-Many relationship with Comment model via `comments` attribute.
 
     """
 
@@ -90,6 +92,7 @@ class Image(JoinTime, Base):
 
     transform: Mapped[List["Transform"]] = relationship("Transform",
                                                         back_populates="initial_photo", lazy='joined')
+    comments: Mapped[List["Comment"]] = relationship(back_populates="image", cascade='all, delete', lazy='joined')
 
 
 class Transform(JoinTime, Base):
@@ -108,3 +111,18 @@ class Transform(JoinTime, Base):
     qr_code_public_id: Mapped[str] = mapped_column(String, nullable=True)  # TODO: Cloudinary
     user_id: Mapped[int] = mapped_column(Integer, nullable=False)
     initial_photo = relationship("Image", back_populates="transform")
+
+
+class Comment(JoinTime, Base):
+    """
+
+        Relationships:
+        - Many-to-One relationship with Image model via `image` attribute.
+
+    """
+    __tablename__ = "comments"
+
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'), nullable=False)
+    image_id: Mapped[int] = mapped_column(Integer, ForeignKey('images.id'), nullable=False)
+    text: Mapped[str] = mapped_column(String(255), nullable=False)
+    image: Mapped["Image"] = relationship("Image", back_populates='comments')

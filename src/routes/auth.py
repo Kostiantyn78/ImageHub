@@ -11,7 +11,7 @@ from src.services.auth import auth_service
 from src.services.email import send_email
 
 
-router = APIRouter(prefix='/auth', tags=['Authentification'])
+router = APIRouter(prefix='/auth', tags=['Authentication'])
 get_refresh_token = HTTPBearer()
 
 
