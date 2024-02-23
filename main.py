@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text
 
 from src.database.db import get_db
-from src.routes import auth, users, photo, comments
+from src.routes import auth, users, photo, comments, transform
 
 app = FastAPI(title="ImageHUB", description="Welcome to ImageHUB API",
               swagger_ui_parameters={"syntaxHighlight.theme": "obsidian"})
@@ -18,6 +18,7 @@ app.mount("/static", StaticFiles(directory=directory), name="static")
 app.include_router(auth.router, prefix='/api', tags=['Authentication'])
 app.include_router(users.router, prefix='/api', tags=['Users'])
 app.include_router(photo.router, prefix='/api', tags=['Photos'])
+app.include_router(transform.router, prefix="/api", tags=['Transforming'])
 app.include_router(comments.router, prefix="/api", tags=['Comments'])
 
 

@@ -1,6 +1,9 @@
 import asyncio
+from io import BytesIO
+
 from cloudinary import uploader
 import cloudinary
+from PIL import Image
 from cloudinary.exceptions import Error as CloudinaryError
 from fastapi import HTTPException, UploadFile
 from requests import TooManyRedirects
@@ -41,13 +44,13 @@ class CloudService:
             raise HTTPException(status_code=500, detail=f"Unexpected error: {err}")
 
     @staticmethod
-    async def upload_image(user_id: int, image_file: UploadFile, folder_name: str = None):
+    async def upload_image(user_id: int, image_file: UploadFile, folder_path: str = None):
         try:
-            if not folder_name:
-                folder_name = f"ImageHubProjectDB/user_{user_id}/original_images"
+            if not folder_path:
+                folder_path = f"ImageHubProjectDB/user_{user_id}/original_images"
 
             response = await asyncio.to_thread(cloudinary.uploader.upload, image_file.file,
-                                               folder=folder_name)  # type: ignore
+                                               folder=folder_path)  # type: ignore
             return response['url'], response['public_id']
 
         except Exception as err:
@@ -64,15 +67,40 @@ class CloudService:
             CloudService.handle_exceptions(err)
 
     @staticmethod
-    async def update_cloud_image(public_id: str, transformation_params: dict):
+    async def upload_transformed_image(user_id: int, image_url: str, params_of_transform: dict):
         try:
-            loop = asyncio.get_running_loop()
-            response = await loop.run_in_executor(
-                None, uploader.explicit, public_id, type='upload', eager=[transformation_params])  # noqa
+            folder_path = f"ImageHubProjectDB/user_{user_id}/transformed_images"
+            response = await asyncio.to_thread(cloudinary.uploader.upload, image_url,
+                                               transformation=params_of_transform, folder=folder_path)  # noqa
+
+            return response['url'], response['public_id']
+
+        except Exception as err:
+            CloudService.handle_exceptions(err)
+
+    @staticmethod
+    async def update_image_on_cloudinary(cloudinary_public_id: str, params_of_transform: dict):
+        try:
+            response = await asyncio.to_thread(cloudinary.uploader.explicit, cloudinary_public_id,
+                                               type='upload', eager=[params_of_transform])  # noqa
 
             if 'eager' in response and response['eager']:
                 eager_transformed_url = response['eager'][0]['url']
                 return eager_transformed_url
+
+        except Exception as err:
+            CloudService.handle_exceptions(err)
+
+    @staticmethod
+    async def upload_qr_code(user_id: int, img: Image.Image):
+        try:
+            buffer = BytesIO()
+            img.save(buffer, format="PNG")
+            buffer.seek(0)
+
+            folder_path = f"ImageHubProjectDB/user_{user_id}/qr_codes"
+            response = await asyncio.to_thread(cloudinary.uploader.upload, buffer, folder=folder_path)  # noqa
+            return response['url'], response['public_id']
 
         except Exception as err:
             CloudService.handle_exceptions(err)
