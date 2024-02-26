@@ -2,7 +2,8 @@
 name = "imagehub"
 version = "0.1.0"
 description = ""
-authors = ["legendarym4x <maxwel842@gmail.com>"]
+authors = ["Maksim Nesterovskyi <maxwel842@gmail.com>", "Yuliia Didenko <yu_lyan@ukr.net>",
+           "Kostiantyn Gorishnyi <ksgorishniy@gmail.com>", "Taras Barskyi <barskyi69@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
@@ -28,6 +29,21 @@ qrcode = "^7.4.2"
 pillow = "^10.2.0"
 
 
+[tool.poetry.group.test.dependencies]
+pytest = "7.4.4"
+pytest-asyncio = "^0.23.4"
+httpx = "^0.26.0"
+aiosqlite = "^0.19.0"
+
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+
+[tool.pytest.ini_options]
+addopts = "--doctest-modules"
+testpaths = [
+    "tests", ]
+pythonpath = "."
+filterwarnings = "ignore::DeprecationWarning"
