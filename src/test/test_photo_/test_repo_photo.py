@@ -15,7 +15,12 @@ from src.schemas.photo_valid import ImageSchema
 
 class TestHasAccess(unittest.IsolatedAsyncioTestCase):
 
+    """Test cases for the has_access function."""
+
     async def test_has_access_admin(self):
+
+        """Test has_access function when the user is an admin."""
+
         self.session = AsyncMock(spec=AsyncSession)
         self.user = User(id=1, role=Role.admin)
         self.photo_owner = 1
@@ -26,6 +31,9 @@ class TestHasAccess(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(result)
 
     async def test_has_access_user_id_match(self):
+
+        """Test has_access function when user ID matches the photo owner."""
+
         self.user = User(id=1, role=Role.user)
         self.photo_owner = 1
         self.status_role = Role.user
@@ -35,6 +43,9 @@ class TestHasAccess(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(result)
 
     async def test_has_access_user_id_not_match(self):
+
+        """Test has_access function when user ID does not match the photo owner."""
+
         self.user = User(id=2, role=Role.user)
         self.photo_owner = 1
         self.status_role = Role.user
@@ -46,7 +57,12 @@ class TestHasAccess(unittest.IsolatedAsyncioTestCase):
 
 class TestPhoto(unittest.IsolatedAsyncioTestCase):
 
+    """Test cases for photo-related functions: get_picture, upload_picture, delete_picture."""
+
     def setUp(self) -> None:
+
+        """Set up common objects and data for test cases."""
+
         self.session = AsyncMock(spec=AsyncSession)
         self.image = Image(id=1, url='url ImageHUB', description='ImageHUB',
                            created_at=datetime(2000, 3, 12), updated_at=datetime(2000, 3, 13))
@@ -69,6 +85,9 @@ class TestPhoto(unittest.IsolatedAsyncioTestCase):
         ]
 
     async def test_get_image(self):
+
+        """Test get_picture function for fetching an image."""
+
         mocked_image = MagicMock()
         mocked_image.scalar_one_or_none.return_value = self.image
         self.session.execute.return_value = mocked_image
@@ -80,6 +99,9 @@ class TestPhoto(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(e.detail, 'Not enough permissions')
 
     async def test_upload_picture_success(self):
+
+        """Test upload_picture function for successful image upload."""
+
         with patch("src.services.cloud_service.CloudService.upload_image") as mock_upload_image:
             mock_upload_image.return_value = ("mocked_url", "mocked_public_id")
 
@@ -104,6 +126,9 @@ class TestPhoto(unittest.IsolatedAsyncioTestCase):
 
     @patch("src.services.cloud_service.CloudService.delete_picture")
     async def test_delete_image(self, mock_delete_picture):
+
+        """Test delete_picture function for deleting an image."""
+
         cloudinary.config(
             cloud_name=config.CLOUDINARY_NAME,
             api_key=config.CLOUDINARY_API_KEY,
@@ -123,6 +148,9 @@ class TestPhoto(unittest.IsolatedAsyncioTestCase):
 
     @patch("src.services.cloud_service.CloudService.delete_picture")
     async def test_delete_image_not_found(self, mock_delete_picture):
+
+        """Test delete_picture function when the specified image is not found."""
+
         cloudinary.config(
             cloud_name=config.CLOUDINARY_NAME,
             api_key=config.CLOUDINARY_API_KEY,
