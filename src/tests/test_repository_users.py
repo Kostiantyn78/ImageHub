@@ -12,12 +12,28 @@ from src.schemas.user import UserModel
 class TestUser(unittest.IsolatedAsyncioTestCase):
 
     def setUp(self):
+        """
+        The setUp function is called before each test function.
+        It creates a new AsyncMock object for the session, and a User object with some attributes.
+
+        :param self: Represent the instance of the class
+        :return: A user object with the following attributes:
+        """
         self.session = AsyncMock(spec=AsyncSession)
         self.user = User(id=1, username='test_user', password="qwerty", email='test@example.com')
 
     @patch('src.repository.users.Gravatar', spec=True)
     @patch('src.repository.users.User', spec=True)
     async def test_create_user_success(self, MockUser, MockGravatar):
+        """
+        The test_create_user_success function tests the create_user function.
+
+        :param self: Represent the instance of the class
+        :param MockUser: Mock the user class from the src
+        :param MockGravatar: Mock the gravatar class
+        :return: The created_user variable, which is the result of calling create_user with the user data and mock
+        database session
+        """
         mock_db_session = AsyncMock()
         mock_gravatar_instance = MockGravatar.return_value
         mock_gravatar_instance.get_image.return_value = 'http://example.com/avatar.jpg'
@@ -47,6 +63,14 @@ class TestUser(unittest.IsolatedAsyncioTestCase):
     @patch('src.repository.users.Gravatar', spec=True)
     @patch('src.repository.users.User', spec=True)
     async def test_create_user_with_gravatar_error(self, MockUser, MockGravatar):
+        """
+        The test_create_user_with_gravatar_error function tests the create_user function when a Gravatar error occurs.
+
+        :param self: Access the instance of the class
+        :param MockUser: Mock the user class
+        :param MockGravatar: Mock the gravatar class
+        :return: An exception
+        """
         mock_db_session = self.session
         mock_gravatar_instance = MockGravatar.return_value
         mock_gravatar_instance.get_image.side_effect = Exception('Gravatar error')
@@ -67,6 +91,17 @@ class TestUser(unittest.IsolatedAsyncioTestCase):
     @patch('src.repository.users.User', spec=True)
     @pytest.mark.asyncio
     async def test_update_token(self, Mock_User):
+        """
+        The test_update_token function tests the update_token function.
+        It does this by creating a mock user object and passing it to the update_token function, along with a new token
+        string.
+        The test then asserts that the refresh token of the mock user is equal to 'new token'.  It also asserts that
+        session.commit() was called once.
+
+        :param self: Access the attributes and methods of the class
+        :param Mock_User: Mock the user class
+        :return: The new token
+        """
         mock_user = Mock_User.return_value
         token = 'new token'
         await update_token(mock_user, token, self.session)
@@ -76,6 +111,13 @@ class TestUser(unittest.IsolatedAsyncioTestCase):
     @patch('src.repository.users.User', spec=True)
     @pytest.mark.asyncio
     async def test_confirmed_email(self, MockUser):
+        """
+        The test_confirmed_email function tests the confirmed_email function in the users repository.
+
+        :param self: Access the class that the test function is defined in
+        :param MockUser: Create a mock user object
+        :return: True if the user's confirmed attribute is set to true
+        """
         # Create a mock database session
         mock_db_session = AsyncMock()
 
@@ -96,6 +138,12 @@ class TestUser(unittest.IsolatedAsyncioTestCase):
 
     @pytest.mark.asyncio
     async def test_update_avatar_url(self):
+        """
+        The test_update_avatar_url function tests the update_avatar_url function.
+
+        :param self: Refer to the class that is being tested
+        :return: The user object, which is the same as the mock_user object
+        """
         # Create a mock database session
         mock_db_session = Mock(spec=AsyncSession)
 

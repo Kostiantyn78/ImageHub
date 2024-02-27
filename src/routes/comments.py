@@ -21,19 +21,14 @@ async def create_comment(
         user: User = Depends(auth_service.get_current_user),
 ):
     """
-    Endpoint to create a new comment on an image.
+    The create_comment function creates a new comment on an image.
 
-    :param body: CommentSchema instance containing comment data.
-    :type body: CommentSchema
-    :param image_id: ID of the image to which the comment is associated.
-    :type image_id: int
-    :param db: Asynchronous SQLAlchemy session (dependency injection).
-    :type db: AsyncSession
-    :param user: Current authenticated user (dependency injection).
-    :type user: User
-    :return: The created comment.
-    :rtype: CommentResponse
-    :raises HTTPException: If the text is missing or the request is malformed.
+    :param body: CommentSchema: Validate the request body
+    :param image_id: int: Specify the id of the image to which
+    :param db: AsyncSession: Inject the database session into the function
+    :param user: User: Get the current authenticated user
+    :param : Specify the id of the comment to be deleted
+    :return: A commentresponse object
     """
     if not body.text:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='The text is missing')
@@ -52,19 +47,17 @@ async def get_comments(
         db: AsyncSession = Depends(get_db),
 ):
     """
-    Endpoint to retrieve a list of comments for a specific image.
+    The get_comments function returns a list of comments for the image with the given id.
 
-    :param image_id: ID of the image for which comments are to be retrieved.
-    :type image_id: int
-    :param offset: Offset for pagination.
-    :type offset: int
-    :param limit: Limit for pagination.
-    :type limit: int
-    :param db: Asynchronous SQLAlchemy session (dependency injection).
-    :type db: AsyncSession
-    :return: List of comments.
-    :rtype: list[CommentResponse]
-    :raises HTTPException: If the image is not found.
+    :param image_id: int: Get the comments of a specific image
+    :param offset: int: Get the next set of comments
+    :param ge: Specify the minimum value of a parameter
+    :param limit: int: Limit the number of comments returned
+    :param ge: Specify the minimum value of the parameter
+    :param le: Limit the number of comments returned
+    :param db: AsyncSession: Get the database session
+    :param : Get the image id
+    :return: A list of comments for the image with id = image_id
     """
     comments = await repository_comments.get_comments(image_id, offset, limit, db)
     if comments is None:
@@ -80,19 +73,16 @@ async def update_comment(
         user: User = Depends(auth_service.get_current_user),
 ):
     """
-    Endpoint to update the text of a specific comment by its ID.
+    The update_comment function updates a comment in the database.
+        The function takes an id of the comment to be updated, and a body containing the new text for that comment.
+        It returns an updated Comment object.
 
-    :param body: CommentSchema instance containing updated comment data.
-    :type body: CommentSchema
-    :param comment_id: ID of the comment to be updated.
-    :type comment_id: int
-    :param db: Asynchronous SQLAlchemy session (dependency injection).
-    :type db: AsyncSession
-    :param user: Current authenticated user (dependency injection).
-    :type user: User
-    :return: The updated comment.
-    :rtype: CommentResponse
-    :raises HTTPException: If the text is missing, the request is malformed, or the comment is not found.
+    :param body: CommentSchema: Validate the request body
+    :param comment_id: int: Get the comment id from the path
+    :param db: AsyncSession: Get the database session
+    :param user: User: Check if the user is authenticated
+    :param : Get the id of the comment to be deleted
+    :return: The updated comment
     """
     if not body.text:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='The text is missing')
@@ -111,15 +101,14 @@ async def delete_comment(
         db: AsyncSession = Depends(get_db),
 ):
     """
-    Endpoint to delete a specific comment by its ID.
+    The delete_comment function deletes a comment from the database.
+        The function takes in an integer representing the id of the comment to be deleted, and returns a dictionary containing
+        information about that comment.
 
-    :param comment_id: ID of the comment to be deleted.
-    :type comment_id: int
-    :param db: Asynchronous SQLAlchemy session (dependency injection).
-    :type db: AsyncSession
-    :return: The deleted comment.
-    :rtype: CommentResponse
-    :raises HTTPException: If the comment is not found or the user lacks the necessary permissions.
+    :param comment_id: int: Identify the comment to be deleted
+    :param db: AsyncSession: Get the database session
+    :param : Get the comment id
+    :return: The deleted comment
     """
     comment = await repository_comments.delete_comment(comment_id, db)
     if not comment:

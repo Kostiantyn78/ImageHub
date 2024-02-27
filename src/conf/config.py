@@ -20,6 +20,14 @@ class Settings(BaseSettings):
     @field_validator("ALGORITHM")
     @classmethod
     def validate_algorithm(cls, v: Any):
+        """
+        The validate_algorithm function is a custom validator that will be used to validate the algorithm field.
+        It checks if the value of algorithm is either HS256 or HS512, and raises an error otherwise.
+
+        :param cls: Pass the class of the object being validated
+        :param v: Any: Indicate that the function will accept any type of value
+        :return: The value of the algorithm
+        """
         if v not in ["HS256", "HS512"]:
             raise ValueError("Algorithm must be HS256 or HS512")
         return v

@@ -7,18 +7,13 @@ from src.schemas.comment import CommentSchema
 
 async def create_comment(body: CommentSchema, image_id: int, db: AsyncSession, user: User):
     """
-    Create a new comment in the database.
+    The create_comment function creates a new comment in the database.
 
-    :param body: The schema representing the comment data.
-    :type body: CommentSchema
-    :param image_id: The ID of the picture associated with the comment.
-    :type image_id: int
-    :param db: The asynchronous database session.
-    :type db: AsyncSession
-    :param user: The user creating the comment.
-    :type user: User
-    :return: The created comment.
-    :rtype: Comment
+    :param body: CommentSchema: Validate the comment body
+    :param image_id: int: Specify the image that the comment is being added to
+    :param db: AsyncSession: Pass in the database session
+    :param user: User: Get the user_id of the comment
+    :return: A comment object
     """
     comment = Comment(**body.model_dump(exclude_unset=True), user_id=user.id, image_id=image_id)
     db.add(comment)
@@ -29,18 +24,15 @@ async def create_comment(body: CommentSchema, image_id: int, db: AsyncSession, u
 
 async def get_comments(image_id: int, offset: int, limit: int, db: AsyncSession):
     """
-    Retrieve a list of comments for a specific picture from the database.
+    The get_comments function takes in an image_id, offset, and limit.
+    It then queries the database for the image with that id. If it exists,
+    it returns a list of comments associated with that image.
 
-    :param image_id: The ID of the picture for which comments are retrieved.
-    :type image_id: int
-    :param offset: The offset for pagination.
-    :type offset: int
-    :param limit: The limit for the number of comments to retrieve.
-    :type limit: int
-    :param db: The asynchronous database session.
-    :type db: AsyncSession
-    :return: A list of comments.
-    :rtype: List[Comment]
+    :param image_id: int: Specify the image id of the comments you want to retrieve
+    :param offset: int: Set the offset of the comments to be returned
+    :param limit: int: Limit the number of comments returned
+    :param db: AsyncSession: Pass the database session to the function
+    :return: A list of comments
     """
     statement = select(Image).where(Image.id == image_id)
     image = await db.execute(statement)
@@ -53,18 +45,13 @@ async def get_comments(image_id: int, offset: int, limit: int, db: AsyncSession)
 
 async def update_comment(comment_id: int, body: CommentSchema, db: AsyncSession, user: User):
     """
-    Update a specific comment's text content in the database.
+    The update_comment function updates a comment in the database.
 
-    :param comment_id: The ID of the comment to update.
-    :type comment_id: int
-    :param body: The schema representing the updated comment data.
-    :type body: CommentSchema
-    :param db: The asynchronous database session.
-    :type db: AsyncSession
-    :param user: The user updating the comment.
-    :type user: User
-    :return: The updated comment or None if not found.
-    :rtype: Optional[Comment]
+    :param comment_id: int: Select the comment to be updated
+    :param body: CommentSchema: Pass the new comment text to the function
+    :param db: AsyncSession: Connect to the database
+    :param user: User: Ensure that the user is authorized to update the comment
+    :return: A comment object
     """
     statement = select(Comment).filter_by(id=comment_id, user_id=user.id)
     comment = await db.execute(statement)
@@ -78,14 +65,14 @@ async def update_comment(comment_id: int, body: CommentSchema, db: AsyncSession,
 
 async def delete_comment(comment_id: int, db: AsyncSession):
     """
-    Delete a specific comment from the database.
+    The delete_comment function deletes a comment from the database.
+        Args:
+            comment_id (int): The id of the comment to be deleted.
+            db (AsyncSession): An async session object for interacting with the database.
 
-    :param comment_id: The ID of the comment to delete.
-    :type comment_id: int
-    :param db: The asynchronous database session.
-    :type db: AsyncSession
-    :return: The deleted comment or None if not found.
-    :rtype: Optional[Comment]
+    :param comment_id: int: Specify the comment to be deleted
+    :param db: AsyncSession: Pass in the database session
+    :return: A comment object
     """
     statement = select(Comment).filter_by(id=comment_id)
     comment = await db.execute(statement)
