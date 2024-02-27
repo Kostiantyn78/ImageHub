@@ -16,6 +16,22 @@ async def get_picture(
         db: AsyncSession = Depends(get_db),
         user=Depends(auth_service.get_current_user),
 ):
+    """
+    The get_picture function returns a picture object from the database.
+    The function takes in an integer as a parameter, which is the id of the picture to be returned.
+    It also takes in two dependencies: db and user.
+        - db is used to connect to our database using SQLAlchemy's sessionmaker() method, which creates sessions
+        for us that we can use to query our database with SQLAlchemy's ORM methods (e.g., .query(), .add(), etc.).
+        - user is used by FastAPI's auth_service dependency, which uses JWT tokens passed through HTTP requests'
+        Authorization
+
+    :param picture_id: int: Specify the picture id
+    :param db: AsyncSession: Pass the database session to the function
+    :param user: Check if the user is logged in and has access to the picture
+    :param : Get the picture id
+    :return: A picture and the get_pictures function returns a list of pictures
+
+    """
     picture = await repo_photos.get_picture(picture_id, db, user)
     if picture is None:
         raise HTTPException(
@@ -30,6 +46,16 @@ async def upload_image(
         db: AsyncSession = Depends(get_db),
         user: User = Depends(auth_service.get_current_user)
 ):
+    """
+    The upload_image function is used to upload an image to the database.
+
+    :param file: UploadFile: Get the file from the request
+    :param body: ImageSchema: Validate the data that is passed in
+    :param db: AsyncSession: Get the database session
+    :param user: User: Get the user that is currently logged in
+    :return: A picture object
+
+    """
     try:
         picture = await repo_photos.upload_picture(file, body, db, user)
         if picture is None:
@@ -49,6 +75,18 @@ async def delete_image(
         db: AsyncSession = Depends(get_db),
         user=Depends(auth_service.get_current_user),
 ):
+    """
+    The delete_image function deletes a picture from the database.
+    It takes in an integer as a parameter, which is the id of the picture to be deleted.
+    The function returns a dictionary containing information about the deleted image.
+
+    :param picture_id: int: Specify the picture id of the image to be deleted
+    :param db: AsyncSession: Pass the database session to the function
+    :param user: Get the current user
+    :param : Get the id of the picture to be deleted
+    :return: The deleted picture
+
+    """
     picture = await repo_photos.delete_picture(picture_id, db, user)
     if picture is None:
         raise HTTPException(
@@ -63,6 +101,19 @@ async def update_image(
         db: AsyncSession = Depends(get_db),
         user=Depends(auth_service.get_current_user),
 ):
+    """
+    The update_image function updates an image in the database.
+    The function takes a picture_id and body as input, and returns the updated image.
+    If no such image exists, it raises a 404 error.
+
+    :param body: ImageUpdateSchema: Validate the request body
+    :param picture_id: int: Get the picture id from the url
+    :param db: AsyncSession: Pass the database connection to the function
+    :param user: Check if the user is logged in
+    :param : Get the id of the image to be deleted
+    :return: A picture object
+
+    """
     picture = await repo_photos.image_update(picture_id, body, db, user)
     if picture is None:
         raise HTTPException(
