@@ -99,8 +99,7 @@ FastAPI decorators are used to check the token and user role.
 
 - Apply basic photo transformations using
   [Cloudinary services](https://cloudinary.com/documentation/image_transformations).
-  `   POST /api/transform/create_transform/{natural_photo_id}
-`
+  `  POST /api/transform/create_transform/{natural_photo_id}`
 - Generate links to transformed images for viewing as URL and QR-code. Links are stored on the server.
 
 With the help of [FastAPI decorators, described above](#authentication),
@@ -190,7 +189,7 @@ _and fill in the information you need, run the docker container and create the d
 - [Documentation](http://localhost:63342/ImageHub/docs/_build/html/index.html?_ijt=bievmo05hld2bt65j03j40vh49&_ij_reload=RELOAD_ON_SAVE)
 - [Swagger documentation](http://127.0.0.1:8000/docs#)
 - [GitHub](https://github.com/Kostiantyn78/ImageHub)
-- [Live example](https://ImageHub.onrender.com/docs#)
+- [Live example](https://imagehub-54rh.onrender.com/docs#)
 
 ---
 
